@@ -1,3 +1,5 @@
+from publicacion import Publicacion
+
 class Usuario:
     # Atributo de clase
     red = "Instagram"
@@ -9,10 +11,16 @@ class Usuario:
         self._seguidores = []       # lista de Usuario
         self._seguidos = []         # lista de Usuario
         self._publicaciones = []    # lista de Publicacion
+        
+        # --- NUEVOS ATRIBUTOS DE INCIDENCIAS ---
+        self._verificado = False
+        self._reportado = False
 
     def __str__(self):
+        # Le agregamos el check visual si está verificado
+        verif = "✅" if self._verificado else ""
         return (
-            f"@{self._nombre_usuario} | "
+            f"@{self._nombre_usuario}{verif} | "
             f"Seguidores: {self.cantidad_seguidores()} | "
             f"Publicaciones: {self.cantidad_publicaciones()}"
         )
@@ -71,6 +79,20 @@ class Usuario:
         otro._seguidores.append(self)
         return True
 
+    # --- Nuevas acciones para INCIDENCIAS ---
+    def verificar_cuenta(self):
+        self._verificado = True
+        
+    def reportar_cuenta(self):
+        self._reportado = True
+        
+    def esta_verificado(self):
+        return self._verificado
+        
+    def esta_reportado(self):
+        return self._reportado
+
+    # --- Diccionario Actualizado ---
     def a_diccionario(self):
         return {
             "red": self.red,
@@ -80,5 +102,7 @@ class Usuario:
             "seguidores": self.cantidad_seguidores(),
             "seguidos": self.cantidad_seguidos(),
             "publicaciones": self.cantidad_publicaciones(),
-            "es_influencer": self.es_influencer()
- 
+            "es_influencer": self.es_influencer(),
+            "verificado": self._verificado,
+            "reportado": self._reportado
+        }

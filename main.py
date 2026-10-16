@@ -1,6 +1,7 @@
 # =========================================================
 from Clase_usuario import Usuario
 from publicacion import Publicacion
+from usuario_vip import UsuarioVip
 # =========================================================
 
 # FUNCIONES DE LOS MENÚS
@@ -18,7 +19,6 @@ def mostrar_menu():
 
 def main():
     red_social = {}
-    
     print("\n========== INFORMACIÓN DE REGISTRO PREVIO DE USUARIOS DEFINIDOS ==========")
     datos_usuarios = [
         ["valedies_1", "Valeria Guadalupe Diestra Buelot", "valediestra@gmail.com"],
@@ -49,16 +49,50 @@ def main():
         elif opcion == '2':
             print("\n--- BUSCAR PERFIL ---")
             buscar = input("Ingresa el @nombre_usuario que quieres revisar: ").strip()
+            
             if buscar in red_social:
                 perfil = red_social[buscar]
+                # Verificamos si este usuario en específico tiene la membresía VIP
+                es_vip = isinstance(perfil, UsuarioVip)
+                
                 print(f"\n--- 👤 Perfil de @{buscar} ---")
                 print(f"📛 Nombre: {perfil.obtener_nombre_completo()}")
                 print(f"👥 Seguidores: {perfil.cantidad_seguidores()} | 👣 Seguidos: {perfil.cantidad_seguidos()}")
                 print(f"🌟 Influencer: {'Sí' if perfil.es_influencer() else 'No'}")
                 print(f"✅ Verificado: {'Sí' if perfil.esta_verificado() else 'No'}")
                 print(f"🚨 Reportado: {'Sí' if perfil.esta_reportado() else 'No'}")
+                print(f"👑 VIP: {'Sí ⭐' if es_vip else 'No (Standard)'}")
+                
+                # Si es VIP, abrimos sus opciones exclusivas
+                if es_vip:
+                    while True:
+                        print("\n--- ✨ OPCIONES EXCLUSIVAS VIP ✨ ---")
+                        print("1. Cambiar icono de la APP")
+                        print("2. Cambiar tipografía")
+                        print("3. Salir del perfil (Volver al menú)")
+                        sub_perfil = input("Elige una opción VIP (1-3): ").strip()
+
+                        if sub_perfil == '1':
+                            print("\n[Estilos disponibles: Neón, Oscuro, Retro, Dorado, Clásico]")
+                            nuevo_icono = input("Escribe el estilo para tu nuevo icono: ").strip()
+                            print(f"✅ ¡Éxito! El icono de la aplicación ha cambiado al estilo '{nuevo_icono}'.")
+                            
+                        elif sub_perfil == '2':
+                            print("\n[Tipografías disponibles: Cursiva, Negrita, Máquina de escribir, Cómic]")
+                            nueva_fuente = input("Escribe tu nueva tipografía: ").strip()
+                            print(f"✅ ¡Éxito! Tu aplicación ahora usa la tipografía '{nueva_fuente}'.")
+                            
+                        elif sub_perfil == '3':
+                            print("↩️ Saliendo de las opciones VIP...")
+                            break
+                        else:
+                            print("❌ Opción inválida. Intenta con 1, 2 o 3.")
+                else:
+                    # Si no es VIP, hacemos una pausa visual para que el usuario pueda leer los datos
+                    input("\n(Presiona ENTER para volver al menú principal...)")
+                    
             else:
-                print("❌ Usuario no encontrado.")
+                print("❌ Usuario no encontrado en la simulación.")
                 
         elif opcion == '3':
             # =========================================================
@@ -233,10 +267,11 @@ def main():
             while True:
                 print("\n--- OPCIÓN 5: INCIDENCIAS Y ESTADO ---")
                 print("1. Verificar cuenta (Otorga el check azul)")
-                print("2. Reportar a un usuario por mal comportamiento")
-                print("3. Revisar estado de incidencias de un usuario")
-                print("4. Volver al menú principal")
-                sub5 = input("Elige (1-4): ").strip()
+                print("2. Gestión de Membresía VIP (Submenú)")
+                print("3. Reportar a un usuario por mal comportamiento")
+                print("4. Revisar estado de incidencias de un usuario")
+                print("5. Volver al menú principal")
+                sub5 = input("Elige (1-5): ").strip()
 
                 if sub5 == '1':
                     buscar = input("¿Qué @usuario deseas verificar?: ").strip()
@@ -247,6 +282,87 @@ def main():
                         print("❌ Usuario no encontrado.")
 
                 elif sub5 == '2':
+                    # --- GESTIÓN DE MEMBRESÍA VIP ---
+                    while True:
+                        print("\n--- GESTIÓN DE MEMBRESÍA VIP ---")
+                        print("1. Establecer el VIP a un usuario")
+                        print("2. Darse de baja (Volver a cuenta gratuita)")
+                        print("3. Volver atrás")
+                        sub_vip = input("Elige (1-3): ").strip()
+
+                        if sub_vip == '1':
+                            buscar = input("Identifícate (@usuario) para adquirir el VIP: ").strip()
+                            if buscar in red_social:
+                                usr_actual = red_social[buscar]
+                                if isinstance(usr_actual, UsuarioVip):
+                                    print(f"❌ ¡@{buscar} ya cuenta con una membresía VIP activa!")
+                                else:
+                                    # 1. Extraemos los datos actuales
+                                    nombre = usr_actual.obtener_nombre_completo()
+                                    correo = usr_actual.obtener_correo()
+                                    
+                                    # 2. Creamos el nuevo objeto VIP
+                                    nuevo_vip = UsuarioVip(buscar, nombre, correo)
+                                    
+                                    # 3. Traspasamos TODO el historial (seguidores, posts, checks)
+                                    nuevo_vip._seguidores = usr_actual._seguidores
+                                    nuevo_vip._seguidos = usr_actual._seguidos
+                                    nuevo_vip._publicaciones = usr_actual._publicaciones
+                                    nuevo_vip._verificado = usr_actual._verificado
+                                    nuevo_vip._reportado = usr_actual._reportado
+                                    
+                                    # 4. Reemplazamos en el diccionario general
+                                    red_social[buscar] = nuevo_vip
+                                    
+                                    print(f"\n🎉 ¡Felicidades! @{buscar} ha adquirido la membresía VIP.")
+                                    print("✨ TUS NUEVOS BENEFICIOS ✨")
+                                    print("  - Insignia exclusiva y cero anuncios.")
+                                    print("  - Duración máxima de historias extendida a 48h.")
+                                    print("  - Límite de publicaciones fijadas aumentado a un máximo de 6.")
+                                    print("  - Puedes cambiar el icono de la app.")
+                                    print("  - Puedes cambiar la tipografía de tus textos.")
+                            else:
+                                print("❌ Usuario no encontrado.")
+
+                        elif sub_vip == '2':
+                            buscar = input("Identifícate (@usuario) para cancelar tu suscripción: ").strip()
+                            if buscar in red_social:
+                                usr_actual = red_social[buscar]
+                                if not isinstance(usr_actual, UsuarioVip):
+                                    print(f"❌ @{buscar} ya es un usuario gratuito. No puedes darte de baja.")
+                                else:
+                                    # 1. Extraemos los datos actuales
+                                    nombre = usr_actual.obtener_nombre_completo()
+                                    correo = usr_actual.obtener_correo()
+                                    
+                                    # 2. Creamos el nuevo objeto Normal
+                                    usuario_normal = Usuario(buscar, nombre, correo)
+                                    
+                                    # 3. Traspasamos TODO el historial
+                                    usuario_normal._seguidores = usr_actual._seguidores
+                                    usuario_normal._seguidos = usr_actual._seguidos
+                                    usuario_normal._publicaciones = usr_actual._publicaciones
+                                    usuario_normal._verificado = usr_actual._verificado
+                                    usuario_normal._reportado = usr_actual._reportado
+                                    
+                                    # 4. Reemplazamos en el diccionario general
+                                    red_social[buscar] = usuario_normal
+                                    
+                                    print(f"\n📉 @{buscar} se ha dado de baja del servicio VIP.")
+                                    print("🔒 ESTADO ACTUAL DE TU CUENTA 🔒")
+                                    print("  - Has perdido los beneficios del VIP (Insignia, icono y tipografías).")
+                                    print("  - Tu cuenta vuelve a ser Standard (verás anuncios).")
+                                    print("  - Duración de historias reducida a 24h.")
+                                    print("  - Máximo de publicaciones fijadas se reduce a 3.")
+                            else:
+                                print("❌ Usuario no encontrado.")
+
+                        elif sub_vip == '3':
+                            break
+                        else:
+                            print("❌ Opción inválida.")
+
+                elif sub5 == '3':
                     buscar = input("¿Qué @usuario deseas reportar?: ").strip()
                     if buscar in red_social:
                         red_social[buscar].reportar_cuenta()
@@ -254,19 +370,24 @@ def main():
                     else:
                         print("❌ Usuario no encontrado.")
 
-                elif sub5 == '3':
+                elif sub5 == '4':
                     buscar = input("¿De qué @usuario quieres ver el estado?: ").strip()
                     if buscar in red_social:
                         usr = red_social[buscar]
                         print(f"\n--- ESTADO DE @{buscar} ---")
+                        es_vip = isinstance(usr, UsuarioVip)
                         print(f"Verificado: {'Sí ✅' if usr.esta_verificado() else 'No ❌'}")
                         print(f"Reportado: {'Sí 🚨' if usr.esta_reportado() else 'No 🟢'}")
                         print(f"Influencer (>1000 seg): {'Sí 🌟' if usr.es_influencer() else 'No'}")
+                        print(f"Suscripción VIP: {'Activa ⭐' if es_vip else 'Gratuita (Standard)'}")
                     else:
                         print("❌ Usuario no encontrado.")
 
-                elif sub5 == '4':
+                elif sub5 == '5':
                     break
+                    
+                else:
+                    print("❌ Opción inválida. Intenta del 1 al 5.")
 
         elif opcion == '6':
             print("\nSaliendo de la simulación del Grupo 3... ¡Hasta luego!")
