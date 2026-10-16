@@ -172,3 +172,37 @@ class UsuarioVip(Usuario):
         return super().crear_lista_publico(nombre)
 
 
+    # --- Validaciones de limites Instagram Plus ---
+
+    def establecer_estado_plus(self, activo):
+        """Actualiza el estado de la suscripcion Plus."""
+
+        if not isinstance(activo, bool):
+            return False
+
+        self._beneficios_activos = activo
+        return True
+
+    def duracion_historia(self):
+        """Devuelve la duracion segun la suscripcion."""
+
+        if self._beneficios_activos:
+            return self.DURACION_HISTORIA
+
+        return Usuario.DURACION_HISTORIA
+
+    def limite_fijadas(self):
+        """Devuelve el limite de publicaciones fijadas."""
+
+        if self._beneficios_activos:
+            return self.MAX_FIJADAS
+
+        return Usuario.MAX_FIJADAS
+
+    def fijar_publicacion(self, publicacion):
+        """Aplica el limite de fijadas segun el plan."""
+
+        if len(self._fijadas) >= self.limite_fijadas():
+            return False
+
+        return super().fijar_publicacion(publicacion)
