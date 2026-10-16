@@ -71,17 +71,6 @@ class Usuario:
         otro._seguidores.append(self)
         return True
 
-    def publicar(self, contenido):
-        p = Publicacion(self, contenido)
-        self._publicaciones.append(p)
-        return p
-
-    def dar_like(self, publicacion):
-        return publicacion.dar_like(self)
-
-    def comentar(self, publicacion, texto):
-        return publicacion.comentar(self, texto)
-
     def a_diccionario(self):
         return {
             "red": self.red,
