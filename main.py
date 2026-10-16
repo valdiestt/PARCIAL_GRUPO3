@@ -1,28 +1,34 @@
+# =========================================================
+# IMPORTACIÓN DE CLASES PARA LA SIMULACIÓN DE USUARIOS DE INSTAGRAM
+# =========================================================
 from Clase_usuario import Usuario
 from publicacion import Publicacion
 from usuario_vip import UsuarioVip
 
 # =========================================================
-# FUNCIONES DE LOS MENÚS
+# TODAS LAS FUNCIONES DE LA SIMULACIÓN DE USUARIOS DE INSTAGRAM DEFINIDOS (MENÚ PRINCIPAL)
 # =========================================================
 def mostrar_menu():
     print("\n" + "="*60)
     print("      SIMULACIÓN DE USUARIOS DE INSTAGRAM DEFINIDOS")
     print("="*60)
     print("1. Ver lista de usuarios registrados con sus estadísticas")
-    print("2. Ver detalles completos de una cuenta (Perfil)")
+    print("2. Ver detalles completos de una cuenta (Perfil con Submenú)")
     print("3. Gestión de Seguidores y Follows (Submenú)")
     print("4. Gestión de Publicaciones (Submenú)")
-    print("5. Gestión de Membresía VIP (Submenú)")
+    print("5. Gestión de Membresía Instagram Plus / VIP (Submenú)")
     print("6. Salir de la simulación")
     print("="*60)
 
 def main():
     red_social = {}
-    
+
+# =========================================================
+# INFORMACIÓN DE REGISTRO PREVIO DE USUARIOS DEFINIDOS
+# =========================================================
     print("\n========== INFORMACIÓN DE REGISTRO PREVIO DE USUARIOS DEFINIDOS ==========")
     datos_usuarios = [
-        ["valedies_1", "Valeria Guadalupe Diestra Vuelot", "valediestra@gmail.com"],
+        ["valedies_1", "Valeria Guadalupe Diestra Buelot", "valediestra@gmail.com"],
         ["gbustillos_2", "Gustavo Enrique Bustillos Semeler", "gbustillos@gmail.com"],
         ["stayci_3", "Stayci Marisol Ovalle Muñoz", "sovalle@gmail.com"],
         ["sebastian_4", "Sebastián Mauricio Díaz Pasache", "sdiaz@gmail.com"]
@@ -34,19 +40,26 @@ def main():
         
     print("====================================================")
 
-    # =========================================================
-    # BUCLE DEL MENÚ PRINCIPAL
-    # =========================================================
+# =========================================================
+# BUCLE DEL MENÚ PRINCIPAL (OPCIONES 1-6)
+# =========================================================
     while True:
         mostrar_menu()
         opcion = input("Elige una opción (1-6): ").strip()
 
+# =========================================================
+# OBTENCIÓN DE DATOS DE USUARIOS AL ESCOGER LA OPCIÓN 1 (SEMIORGANIZADO EN TABLA)
+# =========================================================
         if opcion == '1':
-            print("\n========== INFORMACIÓN DE CUENTA INSTAGRAM ==========")
+            print("\n====================== INFORMACIÓN DE CUENTA INSTAGRAM ======================")
             print("|===== User ====|========= Nombre Completo =========|======== Correo =======|")
             for datos in datos_usuarios:
                 print(datos)
-                
+            print("================|===================================|========================|")
+
+# =========================================================
+# SERIE DE OPCIONES PARA LA OPCIÓN 2 (PREVIAMENTE HABER BUSCADO UN USUARIO DEFINIDO)
+# =========================================================
         elif opcion == '2':
             print("\n--- BUSCAR PERFIL ---")
             buscar = input("Ingresa el @nombre_usuario que quieres revisar: ").strip()
@@ -70,6 +83,7 @@ def main():
                         sub_perfil = input("Elige una opción VIP (1-3): ").strip()
 
                         if sub_perfil == '1':
+                        # Si de la opción 2, se escoge la subopción 1
                             nuevo_icono = input("Escribe el estilo para tu nuevo icono (ej. Oscuro): ").strip()
                             if perfil.cambiar_icono(nuevo_icono):
                                 print(f"✅ ¡Éxito! El icono de la app cambió a '{nuevo_icono}'.")
@@ -77,6 +91,7 @@ def main():
                                 print("❌ Error al cambiar icono.")
                                 
                         elif sub_perfil == '2':
+                        # Si de la opción 2, se escoge la subopción 2
                             nueva_fuente = input("Escribe tu nueva tipografía (ej. Cursiva): ").strip()
                             if perfil.cambiar_tipografia(nueva_fuente):
                                 print(f"✅ ¡Éxito! Tu aplicación ahora usa la tipografía '{nueva_fuente}'.")
@@ -90,7 +105,10 @@ def main():
                     input("\n(Presiona ENTER para volver al menú principal...)")
             else:
                 print("❌ Usuario no encontrado.")
-                
+
+# =========================================================
+# SERIE DE OPCIONES PARA LA OPCIÓN 3 (GESTIÓN DE SEGUIDORES Y SEGUIDOS)
+# =========================================================      
         elif opcion == '3':
             while True:
                 print("\n" + "-"*50)
@@ -105,6 +123,7 @@ def main():
                 sub3 = input("Elige una subopción (1-4): ").strip()
 
                 if sub3 == '1':
+                # Si de la opción 3, se escoge la subopción 1
                     seguidor = input("¿Quién va a seguir?: ").strip()
                     seguido = input("¿A quién va a seguir?: ").strip()
                     if seguidor in red_social and seguido in red_social:
@@ -115,7 +134,7 @@ def main():
                     else:
                         print("❌ Uno o ambos usuarios no existen.")
 
-                elif sub3 == '2':
+                elif sub3 == '2': # Si de la opción 3, se escoge la subopción 2
                     buscar = input("Ingresa el @usuario que deseas consultar: ").strip()
                     if buscar in red_social:
                         seguidos = red_social[buscar].obtener_seguidos()
@@ -129,6 +148,7 @@ def main():
                         print("❌ Usuario no encontrado.")
 
                 elif sub3 == '3':
+                # Si de la opción 3, se escoge la subopción 3
                     buscar = input("Ingresa el @usuario que deseas consultar: ").strip()
                     if buscar in red_social:
                         seguidores = red_social[buscar].obtener_seguidores()
@@ -141,24 +161,28 @@ def main():
                     else:
                         print("❌ Usuario no encontrado.")
 
-                elif sub3 == '4':
+                elif sub3 == '4': # Si de la opción 3, se escoge la subopción 4
                     print("↩️ Regresando al menú principal...")
                     break
 
+# =========================================================
+# SERIE DE OPCIONES PARA LA OPCIÓN 4 (GESTIÓN DE PUBLICACIONES, LIKES Y COMENTARIOS)
+# =========================================================
         elif opcion == '4':
             while True:
                 print("\n--- OPCIÓN 4: PUBLICACIONES ---")
                 print("1. Crear una nueva publicación (Identificarse primero)")
-                print("2. Ver feed, likes y comentarios de un usuario")
+                print("2. Ver las publicaciones de un usuario")
                 print("3. Comentar la publicación de alguien")
-                print("4. Volver al menú principal")
-                sub4 = input("Elige (1-4): ").strip()
+                print("4. Compartir la publicación de alguien")
+                print("5. Volver al menú principal")
+                sub4 = input("Elige (1-5): ").strip()
 
                 if sub4 == '1':
+                # Si de la opción 4, se escoge la subopción 1
                     autor = input("Identifícate (Ingresa tu @usuario): ").strip()
                     if autor in red_social:
                         texto = input("Escribe el contenido de tu publicación: ")
-                        # ADAPTACIÓN: Instanciamos directamente Publicacion ya que Usuario no tiene el método
                         nueva_pub = Publicacion(red_social[autor], texto)
                         red_social[autor].obtener_publicaciones().append(nueva_pub)
                         print("✅ ¡Publicación subida con éxito!")
@@ -166,6 +190,7 @@ def main():
                         print("❌ Ese usuario no existe.")
 
                 elif sub4 == '2':
+                # Si de la opción 4, se escoge la subopción 2
                     buscar = input("¿De qué @usuario quieres ver el feed?: ").strip()
                     if buscar in red_social:
                         pubs = red_social[buscar].obtener_publicaciones()
@@ -176,12 +201,13 @@ def main():
                                 print(f"[{i}] {pub}")
                                 
                             print("\n--- INTERACCIÓN CON EL FEED ---")
-                            print("A. Ver detalles (Quién dio like y leer comentarios)")
-                            print("B. Dar un Like a una publicación")
+                            print("A. Ver cantidad de likes, comentarios y compartidos de una publicación")
+                            print("B. Dar o quitar un Like a una publicación")
                             print("C. Salir de este feed")
                             accion = input("Elige (A/B/C): ").strip().upper()
 
                             if accion == 'A':
+                                # Si de la subopción 2, se escoge la opción específica A
                                 try:
                                     idx = int(input("Ingresa el número [#] de la publicación: "))
                                     pub = pubs[idx]
@@ -199,21 +225,28 @@ def main():
                                             print(f"   {c}")
                                     else:
                                         print("   Sin comentarios aún.")
+                                    
+                                    print(f"🔁 Compartidos: {pub.obtener_compartidos()}")
                                 except ValueError:
                                     print("❌ Debes ingresar un número válido.")
                                 except IndexError:
                                     print("❌ Ese número de publicación no existe.")
                                     
                             elif accion == 'B':
+                                # Si de la subopción 2, se escoge la opción específica B
                                 interactor = input("Identifícate (Tu @usuario): ").strip()
                                 if interactor in red_social:
                                     try:
-                                        idx = int(input("Ingresa el número [#] de la publicación a dar like: "))
-                                        # ADAPTACIÓN: Usamos el método propio de la clase Publicacion
-                                        if pubs[idx].dar_like(red_social[interactor]):
-                                            print(f"✅ ¡Le diste like a la publicación [{idx}]!")
+                                        idx = int(input("Ingresa el número [#] de la publicación a dar/quitar like: "))
+                                        usuario_interactor = red_social[interactor]
+                                        
+                                        if usuario_interactor in pubs[idx].obtener_likes():
+                                            pubs[idx].quitar_like(usuario_interactor)
+                                            print(f"💔 Le quitaste tu like a la publicación [{idx}].")
                                         else:
-                                            print("⚠️ Ya le habías dado like a esta publicación antes.")
+                                            pubs[idx].dar_like(usuario_interactor)
+                                            print(f"✅ ¡Le diste like a la publicación [{idx}]!")
+                                            
                                     except (ValueError, IndexError):
                                         print("❌ Número de publicación inválido.")
                                 else:
@@ -222,6 +255,7 @@ def main():
                         print("❌ Usuario no encontrado.")
 
                 elif sub4 == '3':
+                # Si de la opción 4, se escoge la subopción 3
                     interactor = input("¿Quién va a comentar? (Tu @usuario): ").strip()
                     autor = input("¿A quién quieres comentarle? (@usuario): ").strip()
                     if interactor in red_social and autor in red_social:
@@ -234,7 +268,6 @@ def main():
                             try:
                                 indice = int(input("Ingresa el número [#] de la publicación a comentar: "))
                                 comentario = input("Escribe tu comentario: ")
-                                # ADAPTACIÓN: Usamos el método propio de la clase Publicacion
                                 if pubs[indice].comentar(red_social[interactor], comentario):
                                     print("✅ ¡Comentario enviado!")
                                 else:
@@ -243,21 +276,48 @@ def main():
                                 print("❌ Número inválido.")
                     else:
                         print("❌ Usuarios no encontrados.")
-
+                
                 elif sub4 == '4':
-                    break
+                # Si de la opción 4, se escoge la subopción 4
+                    interactor = input("¿Quién va a compartir? (Tu @usuario): ").strip()
+                    autor = input("¿De quién es la publicación a compartir? (@usuario): ").strip()
+                    if interactor in red_social and autor in red_social:
+                        pubs = red_social[autor].obtener_publicaciones()
+                        if not pubs:
+                            print("❌ Este usuario no tiene publicaciones.")
+                        else:
+                            for i, pub in enumerate(pubs):
+                                print(f"[{i}] {pub.obtener_contenido()}")
+                            try:
+                                indice = int(input("Ingresa el número [#] de la publicación a compartir: "))
+                                # Se usa el método compartir() de la clase Publicacion
+                                total_compartidos = pubs[indice].compartir()
+                                print(f"✅ ¡Publicación compartida por @{interactor}! Ahora tiene {total_compartidos} compartidos en total.")
+                            except (ValueError, IndexError):
+                                print("❌ Número de publicación inválido.")
+                    else:
+                        print("❌ Usuarios no encontrados.")
 
+                elif sub4 == '5':
+                # Si de la opción 4, se escoge la subopción 5
+                    break
+                else:
+                    print("❌ Opción inválida.")
+
+# =========================================================
+# SERIE DE OPCIONES PARA LA OPCIÓN 5 (GESTIÓN DE MEMBRESÍA INSTAGRAM PLUS / VIP)
+# =========================================================
         elif opcion == '5':
             while True:
-                # ADAPTACIÓN: Se eliminaron las verificaciones y reportes ya que no existen en los archivos .py enviados
-                print("\n--- OPCIÓN 5: GESTIÓN DE MEMBRESÍA VIP ---")
-                print("1. Establecer el VIP a un usuario")
+                print("\n--- OPCIÓN 5: GESTIÓN DE MEMBRESÍA INSTAGRAM PLUS / VIP ---")
+                print("1. Establecer el Instagram Plus / VIP a un usuario")
                 print("2. Darse de baja (Volver a cuenta gratuita)")
-                print("3. Revisar el estado VIP de un usuario")
+                print("3. Revisar el estado Instagram Plus / VIP de un usuario")
                 print("4. Volver al menú principal")
                 sub5 = input("Elige (1-4): ").strip()
 
                 if sub5 == '1':
+                # Si de la opción 5, se escoge la subopción 1
                     buscar = input("Identifícate (@usuario): ").strip()
                     if buscar in red_social:
                         usr_actual = red_social[buscar]
@@ -266,11 +326,7 @@ def main():
                         else:
                             # Creamos la versión VIP
                             nuevo_vip = UsuarioVip(buscar, usr_actual.obtener_nombre_completo(), usr_actual.obtener_correo())
-                            
-                            # ADAPTACIÓN: Encendemos los beneficios usando el método que SÍ existe en usuario_vip.py
                             nuevo_vip.establecer_estado_plus(True)
-                            
-                            # Traspaso total de las listas
                             nuevo_vip._seguidores = usr_actual.obtener_seguidores()
                             nuevo_vip._seguidos = usr_actual.obtener_seguidos()
                             nuevo_vip._publicaciones = usr_actual.obtener_publicaciones()
@@ -284,7 +340,7 @@ def main():
                             
                             red_social[buscar] = nuevo_vip
                             
-                            print(f"\n🎉 ¡Felicidades! @{buscar} ha adquirido la membresía VIP.")
+                            print(f"\n🎉 ¡Felicidades! @{buscar} ha adquirido la membresía Instagram Plus / VIP.")
                             print("✨ TUS NUEVOS BENEFICIOS ✨")
                             print("  - Insignia exclusiva y cero anuncios.")
                             print("  - Duración máxima de historias extendida a 48h.")
@@ -295,6 +351,7 @@ def main():
                         print("❌ Usuario no encontrado.")
 
                 elif sub5 == '2':
+                # Si de la opción 5, se escoge la subopción 2
                     buscar = input("Identifícate (@usuario): ").strip()
                     if buscar in red_social:
                         usr_actual = red_social[buscar]
@@ -303,8 +360,6 @@ def main():
                         else:
                             # Creamos la versión Normal
                             usuario_normal = Usuario(buscar, usr_actual.obtener_nombre_completo(), usr_actual.obtener_correo())
-                            
-                            # Traspaso total inverso
                             usuario_normal._seguidores = usr_actual.obtener_seguidores()
                             usuario_normal._seguidos = usr_actual.obtener_seguidos()
                             usuario_normal._publicaciones = usr_actual.obtener_publicaciones()
@@ -316,7 +371,7 @@ def main():
                             
                             red_social[buscar] = usuario_normal
                             
-                            print(f"\n📉 @{buscar} se ha dado de baja del servicio VIP.")
+                            print(f"\n📉 @{buscar} se ha dado de baja del servicio Instagram Plus / VIP.")
                             print("🔒 ESTADO ACTUAL DE TU CUENTA 🔒")
                             print("  - Has perdido los beneficios del VIP (Insignia, icono y tipografías).")
                             print("  - Tu cuenta vuelve a ser Standard (verás anuncios).")
@@ -326,6 +381,7 @@ def main():
                         print("❌ Usuario no encontrado.")
                 
                 elif sub5 == '3':
+                # Si de la opción 5, se escoge la subopción 3
                     buscar = input("¿De qué @usuario quieres ver el estado VIP?: ").strip()
                     if buscar in red_social:
                         usr = red_social[buscar]
@@ -336,10 +392,14 @@ def main():
                         print("❌ Usuario no encontrado.")
                         
                 elif sub5 == '4':
+                # Si de la opción 5, se escoge la subopción 4
                     break
                 else:
                     print("❌ Opción inválida.")
 
+# =========================================================
+# SALIDA DE LA SIMULACIÓN (OPCIÓN 6)
+# =========================================================
         elif opcion == '6':
             print("\nSaliendo de la simulación del Grupo 3... ¡Hasta luego!")
             break
