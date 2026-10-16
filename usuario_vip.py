@@ -5,11 +5,18 @@ from Clase_usuario import Usuario
 # USUARIO VIP
 # =====================================================================
 class UsuarioVip(Usuario):
-    def __init__(self, id_usuario, nombre, email, insignia="⭐ Miembro VIP"):
-        # Llama al constructor de la clase base (Usuario)
-        super().__init__(id_usuario, nombre, email)
-        
-        # Atributos exclusivos del servicio VIP
-        self.insignia = insignia
-        self.beneficios_activos = True
-        self.contenido_exclusivo_visto = 0
+    """Representa un usuario con suscripción Instagram Plus."""
+
+    # Beneficios exclusivos de Instagram Plus
+    DURACION_HISTORIA = 48
+    MAX_FIJADAS = 6
+
+    def __init__(self, nombre_usuario, nombre_completo,
+                 correo, insignia="💎 Instagram Plus"):
+
+        # Inicializar atributos heredados de Usuario
+        super().__init__(
+            nombre_usuario,
+            nombre_completo,
+            correo
+        )
