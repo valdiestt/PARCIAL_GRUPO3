@@ -1,6 +1,7 @@
 # =========================================================
 from Clase_usuario import Usuario
 from publicacion import Publicacion
+from usuario_vip import UsuarioVip
 # =========================================================
 
 # FUNCIONES DE LOS MENÚS
