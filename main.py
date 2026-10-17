@@ -6,6 +6,12 @@ from publicacion import Publicacion
 from usuario_vip import UsuarioVip
 
 # =========================================================
+# IMPORTACIÓN DE LA LIBRERÍA MATPLOTIB PARA GRAFICAR ESTADÍSTICAS DE USUARIOS (AL SALIR DEL MENÚ)
+# =========================================================
+# python -m pip install matplotlib (ejecutar en el terminal)
+import matplotlib
+
+# =========================================================
 # TODAS LAS FUNCIONES DE LA SIMULACIÓN DE USUARIOS DE INSTAGRAM DEFINIDOS (MENÚ PRINCIPAL)
 # =========================================================
 def mostrar_menu():
@@ -401,6 +407,47 @@ def main():
 # SALIDA DE LA SIMULACIÓN (OPCIÓN 6)
 # =========================================================
         elif opcion == '6':
+            print("\nCerrando simulación y generando gráfica final de estadísticas...")
+            
+            try:
+                import matplotlib.pyplot as plt
+                
+                # Extrayendo datos dinámicos en tiempo real de la simulación
+                nombres = list(red_social.keys())
+                seguidores = [red_social[u].cantidad_seguidores() for u in nombres]
+                seguidos = [red_social[u].cantidad_seguidos() for u in nombres]
+                publicaciones = [red_social[u].cantidad_publicaciones() for u in nombres]
+
+                # Configuraciones matemáticas para agrupar las barras (sin usar numpy)
+                x = range(len(nombres))
+                ancho_barra = 0.25
+
+                pos_seguidores = [pos - ancho_barra for pos in x]
+                pos_seguidos = [pos for pos in x]
+                pos_publicaciones = [pos + ancho_barra for pos in x]
+
+                # Creando el gráfico con los colores de Instagram
+                fig, ax = plt.subplots(figsize=(10, 6))
+                
+                ax.bar(pos_seguidores, seguidores, ancho_barra, label='Seguidores', color='#E1306C')
+                ax.bar(pos_seguidos, seguidos, ancho_barra, label='Seguidos', color='#833AB4')
+                ax.bar(pos_publicaciones, publicaciones, ancho_barra, label='Publicaciones', color='#405DE6')
+
+                # Detalles estéticos de la ventana
+                ax.set_ylabel('Cantidades')
+                ax.set_title('Resumen Final de Estadísticas - Red Social G3')
+                ax.set_xticks(x)
+                ax.set_xticklabels(nombres)
+                ax.legend()
+
+                # Forzamos a que el gráfico se dibuje y se muestre en una ventana emergente
+                plt.tight_layout()
+                plt.show()
+                print("✅ Gráfica cerrada exitosamente.")
+                
+            except ImportError:
+                print("⚠️ NOTA: No se pudo generar el gráfico porque no tienes instalada la librería.")
+
             print("\nSaliendo de la simulación del Grupo 3... ¡Hasta luego!")
             break
             
