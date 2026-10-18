@@ -2,6 +2,8 @@ class Usuario:
     # =====================================================================
     # ATRIBUTOS DE CLASE
     # =====================================================================
+    red = "Instagram"          
+    
     # Reglas del plan gratis (constantes)
     DURACION_HISTORIA = 24      # horas que dura una historia en el plan gratis
     MAX_LISTAS_PUBLICO = 3      # máximo de listas de público permitidas
@@ -51,6 +53,20 @@ class Usuario:
 
     def obtener_correo(self):
         return self._correo
+
+    def cambiar_nombre_usuario(self, nuevo):
+        # Valida que el nuevo nombre no esté vacío antes de asignarlo
+        if not nuevo:
+            return False
+        self._nombre_usuario = nuevo
+        return True
+
+    def cambiar_correo(self, nuevo):
+        # Valida que el nuevo correo no esté vacío antes de asignarlo
+        if not nuevo:
+            return False
+        self._correo = nuevo
+        return True
 
     # --- Getters de las listas de relaciones ---
     def obtener_seguidores(self):
@@ -104,6 +120,15 @@ class Usuario:
         return self.DURACION_HISTORIA
 
     # --- Permisos base ---
+    def puede_ver_discreto(self):
+        return False
+
+    def puede_supercorazon(self):
+        return False
+
+    def puede_spotlight(self):
+        return False
+
     def puede_cambiar_icono(self):
         return False
 
@@ -135,6 +160,26 @@ class Usuario:
         self._seguidos.remove(otro)
         if self in otro._seguidores:
             otro._seguidores.remove(self)
+        return True
+
+    def publicar_historia(self, contenido):
+        # Guarda el contenido en la lista de historias propias
+        self._historias.append(contenido)
+        return contenido
+
+    def ver_historia(self, otro):
+        # Si veo una historia, APAREZCO en la lista de vistas del otro
+        if self in otro._vistas_por:
+            return False  # Ya la vio
+        otro._vistas_por.append(self)
+        self._historias_vistas.append(otro)
+        return True
+
+    def crear_lista_publico(self, nombre):
+        # Validar que no exceda el máximo del plan gratis (3)
+        if len(self._listas_publico) >= self.MAX_LISTAS_PUBLICO:
+            return False
+        self._listas_publico.append(nombre)
         return True
 
     def agregar_publicacion(self, publicacion):
