@@ -1,4 +1,4 @@
-from Clase_usuario import Usuario 
+from Clase_usuario import Usuario
 
 
 # =====================================================================
@@ -20,7 +20,10 @@ class UsuarioVip(Usuario):
             nombre_completo,
             correo
         )
-
+        self._insignia = insignia
+        self._beneficios_activos = True
+        self._historias_spotlight = []
+        self._supercorazones_enviados = []
 
     # --- Permisos exclusivos de Instagram Plus ---
 
@@ -43,7 +46,6 @@ class UsuarioVip(Usuario):
     def puede_cambiar_tipografia(self):
         """Verifica si puede personalizar la tipografia."""
         return self._beneficios_activos
-
 
     # --- Personalización exclusiva de Instagram Plus ---
 
@@ -170,7 +172,6 @@ class UsuarioVip(Usuario):
 
         # Sin Plus se aplica el limite del usuario normal
         return super().crear_lista_publico(nombre)
-
 
     # --- Validaciones de limites Instagram Plus ---
 
