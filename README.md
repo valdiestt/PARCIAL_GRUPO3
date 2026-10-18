@@ -8,6 +8,7 @@
 - Diaz Pasache, Sebastian Mauricio (20250399)
 
 **Descripción**
+
 Nombre del Sistema: Simulación de la Red Social Instagram (Usuarios Estándar y VIP)
 
 Escenario a simular:
