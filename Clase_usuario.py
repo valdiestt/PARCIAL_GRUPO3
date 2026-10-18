@@ -1,51 +1,48 @@
 class Usuario:
-    # Atributo de clase: compartido por TODAS las instancias
-    # (todos los usuarios pertenecen a Instagram)
-    red = "Instagram"
-
-    # Reglas del plan gratis (constantes de clase)
+    # =====================================================================
+    # ATRIBUTOS DE CLASE
+    # =====================================================================
+    # Reglas del plan gratis (constantes)
     DURACION_HISTORIA = 24      # horas que dura una historia en el plan gratis
     MAX_LISTAS_PUBLICO = 3      # máximo de listas de público permitidas
     MAX_FIJADAS = 3             # máximo de publicaciones fijadas permitidas
 
     def __init__(self, nombre_usuario, nombre_completo, correo):
-        # Atributos de instancia (encapsulados con _)
+        # Constructor de la clase Usuario.
+        # Inicializa los atributos de instancia encapsulados y las listas de relaciones.
+        
+        # --- Atributos de instancia (encapsulados con _) ---
         self._nombre_usuario = nombre_usuario       # @usuario
         self._nombre_completo = nombre_completo     # nombre real
         self._correo = correo                       # correo electrónico
 
-        # Listas que representan las RELACIONES del usuario
-        self._seguidores = []          # lista de objetos Usuario que me siguen
-        self._seguidos = []            # lista de objetos Usuario que yo sigo
-        self._publicaciones = []       # lista de objetos Publicacion que he creado
+        # --- Relaciones simples (Listas) ---
+        self._seguidores = []          # Lista de objetos Usuario que me siguen
+        self._seguidos = []            # Lista de objetos Usuario que yo sigo
+        self._publicaciones = []       # Lista de objetos Publicacion que he creado
 
-        # Historias
-        self._historias = []           # historias que yo publiqué
-        self._historias_vistas = []    # historias de otros que yo vi
-        self._vistas_por = []          # quiénes vieron mis historias
+        # --- Atributos necesarios para la conversión VIP/Normal en el menú ---
+        self._historias = []           
+        self._historias_vistas = []    
+        self._vistas_por = []          
+        self._listas_publico = []      
+        self._fijadas = []             
 
-        # Listas de público y fijadas
-        self._listas_publico = []      # nombres de las listas (máx 3)
-        self._fijadas = []             # publicaciones fijadas (máx 3)
-
-        # Personalización del perfil (por defecto no se pueden cambiar en el plan gratis)
+        # --- Personalización (Bloqueado en plan gratis) ---
         self._icono = "default"
         self._tipografia = "default"
 
     def __str__(self):
-        # Método especial que define cómo se imprime el objeto con print()
+        # Retorna un resumen rápido del perfil al usar print().
         return (
             f"@{self._nombre_usuario} | "
             f"Seguidores: {self.cantidad_seguidores()} | "
             f"Publicaciones: {self.cantidad_publicaciones()}"
         )
 
-    # ---------------------------------------------------------
-    # ENCAPSULAMIENTO: métodos para leer (obtener) y modificar (cambiar)
-    # los atributos privados. Nunca accedemos directamente a _atributo
-    # desde fuera de la clase.
-    # ---------------------------------------------------------
-
+    # =====================================================================
+    # ENCAPSULAMIENTO: Getters (Métodos de acceso)
+    # =====================================================================
     def obtener_nombre_usuario(self):
         return self._nombre_usuario
 
@@ -55,23 +52,7 @@ class Usuario:
     def obtener_correo(self):
         return self._correo
 
-    def cambiar_nombre_usuario(self, nuevo):
-        # Validación: no permitir vacío
-        if not nuevo:
-            return False
-        self._nombre_usuario = nuevo
-        return True
-
-    def cambiar_correo(self, nuevo):
-        # Validación: no permitir vacío
-        if not nuevo:
-            return False
-        self._correo = nuevo
-        return True
-
-    # --- Getters de las listas ---
-    # Devolvemos la lista directamente para poder modificarla desde fuera
-    # (por ejemplo, para añadir publicaciones creadas en main.py)
+    # --- Getters de las listas de relaciones ---
     def obtener_seguidores(self):
         return self._seguidores
 
@@ -102,13 +83,10 @@ class Usuario:
     def obtener_tipografia(self):
         return self._tipografia
 
-    # ---------------------------------------------------------
-    # REGLAS: métodos que devuelven True/False según alguna condición
-    # del usuario. Son "consultas", no modifican nada.
-    # ---------------------------------------------------------
-
+    # =====================================================================
+    # REGLAS Y CONSULTAS: Métodos que devuelven información sin modificar
+    # =====================================================================
     def cantidad_seguidores(self):
-        # len() sobre la lista _seguidores
         return len(self._seguidores)
 
     def cantidad_seguidos(self):
@@ -118,84 +96,66 @@ class Usuario:
         return len(self._publicaciones)
 
     def es_influencer(self):
-        # Regla: tiene 1000 seguidores o más
+        # Regla de negocio: Es influencer si tiene 1000 o más seguidores.
         return self.cantidad_seguidores() >= 1000
 
     def duracion_historia(self):
-        # Devuelve la duración según el atributo de clase
-        # En Usuario normal = 24, en UsuarioVip se sobrescribe a 48
+        # Devuelve la duración de la historia según el atributo de clase.
         return self.DURACION_HISTORIA
 
-    # --- Reglas de permisos (en Usuario normal son todos False) ---
-    # En UsuarioVip se sobrescriben para devolver True
-
-    def puede_ver_discreto(self):
-        return False
-
-    def puede_supercorazon(self):
-        return False
-
-    def puede_spotlight(self):
-        return False
-
+    # --- Permisos base ---
     def puede_cambiar_icono(self):
         return False
 
     def puede_cambiar_tipografia(self):
         return False
 
-    # ---------------------------------------------------------
-    # ACCIONES: métodos que modifican el estado del objeto o de otro
-    # ---------------------------------------------------------
+    # =====================================================================
+    # ACCIONES: Métodos que modifican el estado
+    # =====================================================================
 
     def seguir(self, otro):
-        # No puedes seguirte a ti mismo
-        if otro is self:
-            return False
-        # No puedes seguir dos veces a la misma persona
+        # Permite seguir a otro usuario.
+        # Relación simple: Añade a 'otro' en mis seguidos y me añade a mí en sus seguidores.
+        if not isinstance(otro, Usuario) or otro is self:
+            return False  # No puede seguirse a sí mismo ni a objetos inválidos
+        
         if otro in self._seguidos:
-            return False
+            return False  # Ya lo sigue
 
-        # Añadir a mi lista de seguidos
         self._seguidos.append(otro)
-        # Añadirme a la lista de seguidores del otro (relación bidireccional)
         otro._seguidores.append(self)
         return True
 
-    def publicar_historia(self, contenido):
-        # Guarda el contenido en la lista de historias propias
-        self._historias.append(contenido)
-        return contenido
+    def dejar_de_seguir(self, otro):
+        # Permite dejar de seguir a un usuario.
+        if otro not in self._seguidos:
+            return False  # No lo sigue
 
-    def ver_historia(self, otro):
-        # Regla obligatoria: si veo una historia, APAREZCO en la lista de vistas
-        # Si ya la vi, no hago nada
-        if self in otro._vistas_por:
-            return False
-        # Registro la visita en el otro usuario
-        otro._vistas_por.append(self)
-        # Guardo en mi historial que vi esa historia
-        self._historias_vistas.append(otro)
+        self._seguidos.remove(otro)
+        if self in otro._seguidores:
+            otro._seguidores.remove(self)
         return True
 
-    def crear_lista_publico(self, nombre):
-        # Validar que no exceda el máximo del plan gratis (3)
-        if len(self._listas_publico) >= self.MAX_LISTAS_PUBLICO:
-            return False
-        self._listas_publico.append(nombre)
-        return True
+    def agregar_publicacion(self, publicacion):
+        # Método formal para agregar publicaciones.
+        if publicacion not in self._publicaciones:
+            self._publicaciones.append(publicacion)
+            return True
+        return False
 
     def fijar_publicacion(self, publicacion):
-        # Validar que no exceda el máximo del plan gratis (3)
+        # Valida que no se exceda el máximo de fijadas del plan gratis (3)
         if len(self._fijadas) >= self.MAX_FIJADAS:
             return False
         self._fijadas.append(publicacion)
         return True
 
+    # --- Personalización (Bloqueado en plan gratis) ---
     def cambiar_icono(self, nuevo):
-        # Plan gratis: NO puede cambiar el ícono
+        # En el plan gratis, no se permite cambiar el ícono.
         return False
 
     def cambiar_tipografia(self, nueva):
-        # Plan gratis: NO puede cambiar la tipografía
+        # En el plan gratis, no se permite cambiar la tipografía.
         return False

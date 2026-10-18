@@ -121,15 +121,15 @@ def main():
                 print("      OPCIÓN 3: GESTIÓN DE SEGUIDORES Y SEGUIDOS")
                 print("-"*50)
                 print("1. Simular un 'Follow' (Un usuario sigue a otro)")
-                print("2. Ver a quién sigue un usuario (Seguidos)")
-                print("3. Ver quién sigue a un usuario (Seguidores)")
-                print("4. Volver al menú principal")
+                print("2. Dejar de seguir a un usuario") 
+                print("3. Ver a quién sigue un usuario (Seguidos)")
+                print("4. Ver quién sigue a un usuario (Seguidores)")
+                print("5. Volver al menú principal")
                 print("-"*50)
 
-                sub3 = input("Elige una subopción (1-4): ").strip()
+                sub3 = input("Elige una subopción (1-5): ").strip()
 
                 if sub3 == '1':
-                # Si de la opción 3, se escoge la subopción 1
                     seguidor = input("¿Quién va a seguir?: ").strip()
                     seguido = input("¿A quién va a seguir?: ").strip()
                     if seguidor in red_social and seguido in red_social:
@@ -139,8 +139,19 @@ def main():
                             print("❌ Acción denegada (ya lo sigue o intentó seguirse a sí mismo).")
                     else:
                         print("❌ Uno o ambos usuarios no existen.")
+                        
+                elif sub3 == '2': 
+                    seguidor = input("¿Quién va a dejar de seguir?: ").strip()
+                    seguido = input("¿A quién va a dejar de seguir?: ").strip()
+                    if seguidor in red_social and seguido in red_social:
+                        if red_social[seguidor].dejar_de_seguir(red_social[seguido]):
+                            print(f"✅ ¡Confirmado! @{seguidor} ha dejado de seguir a @{seguido}.")
+                        else:
+                            print("❌ Acción denegada (no lo seguía).")
+                    else:
+                        print("❌ Uno o ambos usuarios no existen.")
 
-                elif sub3 == '2': # Si de la opción 3, se escoge la subopción 2
+                elif sub3 == '3':
                     buscar = input("Ingresa el @usuario que deseas consultar: ").strip()
                     if buscar in red_social:
                         seguidos = red_social[buscar].obtener_seguidos()
@@ -153,8 +164,7 @@ def main():
                     else:
                         print("❌ Usuario no encontrado.")
 
-                elif sub3 == '3':
-                # Si de la opción 3, se escoge la subopción 3
+                elif sub3 == '4':
                     buscar = input("Ingresa el @usuario que deseas consultar: ").strip()
                     if buscar in red_social:
                         seguidores = red_social[buscar].obtener_seguidores()
@@ -167,7 +177,7 @@ def main():
                     else:
                         print("❌ Usuario no encontrado.")
 
-                elif sub3 == '4': # Si de la opción 3, se escoge la subopción 4
+                elif sub3 == '5':
                     print("↩️ Regresando al menú principal...")
                     break
 
