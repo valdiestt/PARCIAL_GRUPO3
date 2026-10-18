@@ -182,13 +182,6 @@ class Usuario:
         self._listas_publico.append(nombre)
         return True
 
-    def agregar_publicacion(self, publicacion):
-        # Método formal para agregar publicaciones.
-        if publicacion not in self._publicaciones:
-            self._publicaciones.append(publicacion)
-            return True
-        return False
-
     def fijar_publicacion(self, publicacion):
         # Valida que no se exceda el máximo de fijadas del plan gratis (3)
         if len(self._fijadas) >= self.MAX_FIJADAS:
