@@ -14,4 +14,5 @@ Nombre del Sistema: Simulación de la Red Social Instagram (Usuarios Estándar y
 Escenario a simular:
 El presente proyecto simula el funcionamiento básico y las interacciones de una red social moderna, específicamente Instagram. El sistema representa un entorno digital donde los usuarios pueden crear cuentas, establecer relaciones sociales (seguir y ser seguidos), generar contenido y reaccionar a él (likes, comentarios y compartidos).
 
-![alt text](imagen-de-instagram.jpg)
+<img width="1125" height="410" alt="instagram-content-creation" src="https://github.com/user-attachments/assets/1fb34cb3-c75e-4317-b0ad-bd238553b80e" />
+
