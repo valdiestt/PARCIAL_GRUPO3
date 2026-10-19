@@ -1,3 +1,4 @@
+
 # =========================================================
 # IMPORTACIÓN DE CLASES PARA LA SIMULACIÓN DE USUARIOS DE INSTAGRAM
 # =========================================================
@@ -6,7 +7,7 @@ from publicacion import Publicacion
 from usuario_vip import UsuarioVip
 
 # =========================================================
-# IMPORTACIÓN DE LA LIBRERÍA MATPLOTIB PARA GRAFICAR ESTADÍSTICAS DE USUARIOS (AL SALIR DEL MENÚ)
+# IMPORTACIÓN DE LA LIBRERÍA MATPLOTLIB PARA GRAFICAR ESTADÍSTICAS DE USUARIOS (AL SALIR DEL MENÚ)
 # =========================================================
 # python -m pip install matplotlib (ejecutar en el terminal)
 import matplotlib
@@ -26,6 +27,140 @@ def mostrar_menu():
     print("6. Salir de la simulación")
     print("="*60)
 
+
+def menu_historias_y_beneficios(red_social):
+    """Conecta los metodos que ya existen en Usuario y UsuarioVip."""
+    nombre = input("Identificate con tu @usuario: ").strip()
+    if nombre not in red_social:
+        print("❌ Usuario no encontrado.")
+        return
+    usuario = red_social[nombre]
+
+    while True:
+        print("\n--- HISTORIAS Y BENEFICIOS ---")
+        print("1. Publicar una historia")
+        print("2. Ver historias de otro usuario")
+        print("3. Destacar una historia Spotlight (Plus)")
+        print("4. Enviar supercorazon a una historia (Plus)")
+        print("5. Crear lista de publico")
+        print("6. Fijar publicacion propia")
+        print("7. Consultar historias, vistas, listas y beneficios")
+        print("8. Volver a membresias")
+        accion = input("Elige (1-8): ").strip()
+
+        if accion == '1':
+            contenido = input("Historia (se permite texto vacio): ")
+            usuario.publicar_historia(contenido)
+            print("✅ Historia publicada.")
+
+        elif accion == '2':
+            destino_nombre = input("¿De quien quieres ver historias?: ").strip()
+            if destino_nombre not in red_social:
+                print("❌ Usuario no encontrado.")
+                continue
+            destino = red_social[destino_nombre]
+            if destino is usuario:
+                print("❌ No puedes ver tus propias historias como otra persona.")
+                continue
+            historias = destino.obtener_historias().copy()
+            if not historias:
+                print("Ese usuario aun no ha publicado historias.")
+                continue
+            if isinstance(destino, UsuarioVip):
+                destacadas = destino.obtener_historias_spotlight()
+                for historia in destacadas:
+                    if historia in historias:
+                        historias.remove(historia)
+                historias = destacadas + historias
+            for i, historia in enumerate(historias, 1):
+                print(f"{i}. {historia}")
+            if usuario.ver_historia(destino):
+                print("✅ Visualizacion registrada." if not usuario.puede_ver_discreto()
+                      else "✅ Historia vista discretamente (Plus).")
+            else:
+                print("No se registro otra vista (puede que ya las hayas visto).")
+
+        elif accion == '3':
+            if not isinstance(usuario, UsuarioVip):
+                print("❌ Spotlight es exclusivo de Plus.")
+                continue
+            historias = usuario.obtener_historias()
+            for i, historia in enumerate(historias):
+                print(f"[{i}] {historia}")
+            try:
+                indice = int(input("Numero de historia Spotlight: "))
+                if not 0 <= indice < len(historias):
+                    raise IndexError
+                exito = usuario.destacar_historia(historias[indice])
+                print("✅ Historia destacada." if exito else "❌ No se pudo destacar otra vez.")
+            except (ValueError, IndexError):
+                print("❌ Numero invalido.")
+
+        elif accion == '4':
+            if not isinstance(usuario, UsuarioVip):
+                print("❌ Los supercorazones son exclusivos de Plus.")
+                continue
+            destino_nombre = input("¿A quien envias el supercorazon?: ").strip()
+            if destino_nombre not in red_social:
+                print("❌ Usuario no encontrado.")
+                continue
+            destino = red_social[destino_nombre]
+            historias = destino.obtener_historias()
+            for i, historia in enumerate(historias):
+                print(f"[{i}] {historia}")
+            try:
+                indice = int(input("Numero de historia: "))
+                if not 0 <= indice < len(historias):
+                    raise IndexError
+                exito = usuario.enviar_supercorazon(destino, historias[indice])
+                print("✅ Supercorazon enviado." if exito else "❌ No se pudo enviar.")
+            except (ValueError, IndexError):
+                print("❌ Numero invalido.")
+
+        elif accion == '5':
+            nombre_lista = input("Nombre de la lista: ")
+            exito = usuario.crear_lista_publico(nombre_lista)
+            print("✅ Lista creada." if exito else "❌ No se pudo crear: nombre repetido o limite alcanzado.")
+
+        elif accion == '6':
+            publicaciones = usuario.obtener_publicaciones()
+            for i, publicacion in enumerate(publicaciones):
+                print(f"[{i}] {publicacion}")
+            try:
+                indice = int(input("Numero de publicacion para fijar: "))
+                if not 0 <= indice < len(publicaciones):
+                    raise IndexError
+                exito = usuario.fijar_publicacion(publicaciones[indice])
+                print("✅ Publicacion fijada." if exito else "❌ Limite de fijadas alcanzado.")
+            except (ValueError, IndexError):
+                print("❌ Numero invalido.")
+
+        elif accion == '7':
+            print(f"Cuenta: {usuario}")
+            print(f"Duracion de historias: {usuario.duracion_historia()} horas")
+            limite = usuario.limite_fijadas() if isinstance(usuario, UsuarioVip) else Usuario.MAX_FIJADAS
+            print(f"Publicaciones fijadas: {len(usuario.obtener_fijadas())}/{limite}")
+            print(f"Historias: {usuario.obtener_historias()}")
+            print("Historias que viste:", [u.obtener_nombre_usuario()
+                                            for u in usuario.obtener_historias_vistas()])
+            print("Personas que vieron tus historias:", [u.obtener_nombre_usuario()
+                                                         for u in usuario.obtener_vistas_por()])
+            print(f"Listas de publico: {usuario.obtener_listas_publico()}")
+            print(f"Ver discreto: {usuario.puede_ver_discreto()} | "
+                  f"Supercorazon: {usuario.puede_supercorazon()} | "
+                  f"Spotlight: {usuario.puede_spotlight()}")
+            print(f"Cambiar icono: {usuario.puede_cambiar_icono()} | "
+                  f"Cambiar tipografia: {usuario.puede_cambiar_tipografia()}")
+            if isinstance(usuario, UsuarioVip):
+                print(f"Insignia: {usuario._insignia}")
+                print(f"Historias Spotlight: {usuario.obtener_historias_spotlight()}")
+                print(f"Supercorazones enviados: {usuario.obtener_supercorazones_enviados()}")
+
+        elif accion == '8':
+            break
+        else:
+            print("❌ Opcion invalida.")
+
 def main():
     red_social = {}
 
@@ -43,7 +178,7 @@ def main():
     for datos in datos_usuarios:
         print(datos)
         red_social[datos[0]] = Usuario(datos[0], datos[1], datos[2])
-        
+
     print("====================================================")
 
 # =========================================================
@@ -59,8 +194,10 @@ def main():
         if opcion == '1':
             print("\n====================== INFORMACIÓN DE CUENTA INSTAGRAM ======================")
             print("|===== User ====|========= Nombre Completo =========|======== Correo =======|")
-            for datos in datos_usuarios:
-                print(datos)
+            for cuenta in red_social.values():
+                print(f"@{cuenta.obtener_nombre_usuario()} | {cuenta.obtener_nombre_completo()} | "
+                      f"{cuenta.obtener_correo()} | Seguidores: {cuenta.cantidad_seguidores()} | "
+                      f"Publicaciones: {cuenta.cantidad_publicaciones()}")
             print("================|===================================|========================|")
 
 # =========================================================
@@ -72,14 +209,14 @@ def main():
             if buscar in red_social:
                 perfil = red_social[buscar]
                 es_vip = isinstance(perfil, UsuarioVip)
-                
+
                 print(f"\n--- 👤 Perfil de @{buscar} ---")
                 print(f"📛 Nombre: {perfil.obtener_nombre_completo()}")
                 print(f"👥 Seguidores: {perfil.cantidad_seguidores()} | 👣 Seguidos: {perfil.cantidad_seguidos()}")
                 print(f"🌟 Influencer: {'Sí' if perfil.es_influencer() else 'No'}")
                 print(f"👑 VIP: {'Sí 💎' if es_vip else 'No (Standard)'}")
                 print(f"🎨 Personalización -> Icono: '{perfil.obtener_icono()}' | Tipografía: '{perfil.obtener_tipografia()}'")
-                
+
                 if es_vip:
                     while True:
                         print("\n--- ✨ OPCIONES EXCLUSIVAS VIP ✨ ---")
@@ -95,7 +232,7 @@ def main():
                                 print(f"✅ ¡Éxito! El icono de la app cambió a '{nuevo_icono}'.")
                             else:
                                 print("❌ Error al cambiar icono.")
-                                
+
                         elif sub_perfil == '2':
                         # Si de la opción 2, se escoge la subopción 2
                             nueva_fuente = input("Escribe tu nueva tipografía (ej. Cursiva): ").strip()
@@ -114,14 +251,14 @@ def main():
 
 # =========================================================
 # SERIE DE OPCIONES PARA LA OPCIÓN 3 (GESTIÓN DE SEGUIDORES Y SEGUIDOS)
-# =========================================================      
+# =========================================================
         elif opcion == '3':
             while True:
                 print("\n" + "-"*50)
                 print("      OPCIÓN 3: GESTIÓN DE SEGUIDORES Y SEGUIDOS")
                 print("-"*50)
                 print("1. Simular un 'Follow' (Un usuario sigue a otro)")
-                print("2. Dejar de seguir a un usuario") 
+                print("2. Dejar de seguir a un usuario")
                 print("3. Ver a quién sigue un usuario (Seguidos)")
                 print("4. Ver quién sigue a un usuario (Seguidores)")
                 print("5. Volver al menú principal")
@@ -139,8 +276,8 @@ def main():
                             print("❌ Acción denegada (ya lo sigue o intentó seguirse a sí mismo).")
                     else:
                         print("❌ Uno o ambos usuarios no existen.")
-                        
-                elif sub3 == '2': 
+
+                elif sub3 == '2':
                     seguidor = input("¿Quién va a dejar de seguir?: ").strip()
                     seguido = input("¿A quién va a dejar de seguir?: ").strip()
                     if seguidor in red_social and seguido in red_social:
@@ -215,7 +352,7 @@ def main():
                         else:
                             for i, pub in enumerate(pubs):
                                 print(f"[{i}] {pub}")
-                                
+
                             print("\n--- INTERACCIÓN CON EL FEED ---")
                             print("A. Ver cantidad de likes, comentarios y compartidos de una publicación")
                             print("B. Dar o quitar un Like a una publicación")
@@ -229,11 +366,11 @@ def main():
                                     pub = pubs[idx]
                                     print(f"\n--- DETALLES DE LA PUBLICACIÓN [{idx}] ---")
                                     print(f"Contenido: {pub.obtener_contenido()}")
-                                    
+
                                     likes = pub.obtener_likes()
                                     lista_likes = ", ".join([f"@{u.obtener_nombre_usuario()}" for u in likes]) if likes else "Nadie aún"
                                     print(f"❤️ Likes ({pub.cantidad_likes()}): {lista_likes}")
-                                    
+
                                     print("💬 Comentarios:")
                                     comentarios = pub.obtener_comentarios()
                                     if comentarios:
@@ -241,13 +378,13 @@ def main():
                                             print(f"   {c}")
                                     else:
                                         print("   Sin comentarios aún.")
-                                    
+
                                     print(f"🔁 Compartidos: {pub.obtener_compartidos()}")
                                 except ValueError:
                                     print("❌ Debes ingresar un número válido.")
                                 except IndexError:
                                     print("❌ Ese número de publicación no existe.")
-                                    
+
                             elif accion == 'B':
                                 # Si de la subopción 2, se escoge la opción específica B
                                 interactor = input("Identifícate (Tu @usuario): ").strip()
@@ -255,14 +392,14 @@ def main():
                                     try:
                                         idx = int(input("Ingresa el número [#] de la publicación a dar/quitar like: "))
                                         usuario_interactor = red_social[interactor]
-                                        
+
                                         if usuario_interactor in pubs[idx].obtener_likes():
                                             pubs[idx].quitar_like(usuario_interactor)
                                             print(f"💔 Le quitaste tu like a la publicación [{idx}].")
                                         else:
                                             pubs[idx].dar_like(usuario_interactor)
                                             print(f"✅ ¡Le diste like a la publicación [{idx}]!")
-                                            
+
                                     except (ValueError, IndexError):
                                         print("❌ Número de publicación inválido.")
                                 else:
@@ -292,7 +429,7 @@ def main():
                                 print("❌ Número inválido.")
                     else:
                         print("❌ Usuarios no encontrados.")
-                
+
                 elif sub4 == '4':
                 # Si de la opción 4, se escoge la subopción 4
                     interactor = input("¿Quién va a compartir? (Tu @usuario): ").strip()
@@ -329,8 +466,9 @@ def main():
                 print("1. Establecer el Instagram Plus / VIP a un usuario")
                 print("2. Darse de baja (Volver a cuenta gratuita)")
                 print("3. Revisar el estado Instagram Plus / VIP de un usuario")
-                print("4. Volver al menú principal")
-                sub5 = input("Elige (1-4): ").strip()
+                print("4. Historias, listas y beneficios")
+                print("5. Volver al menú principal")
+                sub5 = input("Elige (1-5): ").strip()
 
                 if sub5 == '1':
                 # Si de la opción 5, se escoge la subopción 1
@@ -340,25 +478,17 @@ def main():
                         if isinstance(usr_actual, UsuarioVip):
                             print(f"❌ ¡@{buscar} ya cuenta con una membresía VIP activa!")
                         else:
-                            # Creamos la versión VIP
-                            nuevo_vip = UsuarioVip(buscar, usr_actual.obtener_nombre_completo(), usr_actual.obtener_correo())
-                            nuevo_vip.establecer_estado_plus(True)
-                            nuevo_vip._seguidores = usr_actual.obtener_seguidores()
-                            nuevo_vip._seguidos = usr_actual.obtener_seguidos()
-                            nuevo_vip._publicaciones = usr_actual.obtener_publicaciones()
-                            nuevo_vip._historias = usr_actual.obtener_historias()
-                            nuevo_vip._historias_vistas = usr_actual.obtener_historias_vistas()
-                            nuevo_vip._vistas_por = usr_actual.obtener_vistas_por()
-                            nuevo_vip._listas_publico = usr_actual.obtener_listas_publico()
-                            nuevo_vip._fijadas = usr_actual.obtener_fijadas()
-                            nuevo_vip._icono = usr_actual.obtener_icono()
-                            nuevo_vip._tipografia = usr_actual.obtener_tipografia()
-                            
-                            red_social[buscar] = nuevo_vip
-                            
+                            # Cambiamos el tipo del MISMO objeto: nadie pierde sus
+                            # referencias de seguidores, seguidos, likes o publicaciones.
+                            usr_actual.__class__ = UsuarioVip
+                            usr_actual._insignia = "💎 Instagram Plus"
+                            usr_actual._historias_spotlight = []
+                            usr_actual._supercorazones_enviados = []
+                            usr_actual.establecer_estado_plus(True)
+
                             print(f"\n🎉 ¡Felicidades! @{buscar} ha adquirido la membresía Instagram Plus / VIP.")
                             print("✨ TUS NUEVOS BENEFICIOS ✨")
-                            print("  - Insignia exclusiva y cero anuncios.")
+                            print("  - Insignia exclusiva Instagram Plus.")
                             print("  - Duración máxima de historias extendida a 48h.")
                             print("  - Límite de publicaciones fijadas aumentado a un máximo de 6.")
                             print("  - Puedes cambiar el icono de la app.")
@@ -374,28 +504,21 @@ def main():
                         if not isinstance(usr_actual, UsuarioVip):
                             print(f"❌ @{buscar} ya es un usuario gratuito. No puedes darte de baja.")
                         else:
-                            # Creamos la versión Normal
-                            usuario_normal = Usuario(buscar, usr_actual.obtener_nombre_completo(), usr_actual.obtener_correo())
-                            usuario_normal._seguidores = usr_actual.obtener_seguidores()
-                            usuario_normal._seguidos = usr_actual.obtener_seguidos()
-                            usuario_normal._publicaciones = usr_actual.obtener_publicaciones()
-                            usuario_normal._historias = usr_actual.obtener_historias()
-                            usuario_normal._historias_vistas = usr_actual.obtener_historias_vistas()
-                            usuario_normal._vistas_por = usr_actual.obtener_vistas_por()
-                            usuario_normal._listas_publico = usr_actual.obtener_listas_publico()
-                            usuario_normal._fijadas = usr_actual.obtener_fijadas()
-                            
-                            red_social[buscar] = usuario_normal
-                            
+                            # Se conserva el mismo objeto y todas sus relaciones.
+                            usr_actual.establecer_estado_plus(False)
+                            usr_actual.__class__ = Usuario
+                            usr_actual._icono = "default"
+                            usr_actual._tipografia = "default"
+
                             print(f"\n📉 @{buscar} se ha dado de baja del servicio Instagram Plus / VIP.")
                             print("🔒 ESTADO ACTUAL DE TU CUENTA 🔒")
                             print("  - Has perdido los beneficios del VIP (Insignia, icono y tipografías).")
-                            print("  - Tu cuenta vuelve a ser Standard (verás anuncios).")
+                            print("  - Tu cuenta vuelve a ser Standard.")
                             print("  - Duración de historias reducida a 24h.")
                             print("  - Máximo de publicaciones fijadas se reduce a 3.")
                     else:
                         print("❌ Usuario no encontrado.")
-                
+
                 elif sub5 == '3':
                 # Si de la opción 5, se escoge la subopción 3
                     buscar = input("¿De qué @usuario quieres ver el estado VIP?: ").strip()
@@ -406,9 +529,11 @@ def main():
                         print(f"Suscripción VIP: {'Activa 💎' if isinstance(usr, UsuarioVip) else 'Gratuita'}")
                     else:
                         print("❌ Usuario no encontrado.")
-                        
+
                 elif sub5 == '4':
-                # Si de la opción 5, se escoge la subopción 4
+                    menu_historias_y_beneficios(red_social)
+
+                elif sub5 == '5':
                     break
                 else:
                     print("❌ Opción inválida.")
@@ -418,10 +543,10 @@ def main():
 # =========================================================
         elif opcion == '6':
             print("\nCerrando simulación y generando gráfica final de estadísticas...")
-            
+
             try:
                 import matplotlib.pyplot as plt
-                
+
                 # Extrayendo datos dinámicos en tiempo real de la simulación
                 nombres = list(red_social.keys())
                 seguidores = [red_social[u].cantidad_seguidores() for u in nombres]
@@ -438,7 +563,7 @@ def main():
 
                 # Creando el gráfico con los colores de Instagram
                 fig, ax = plt.subplots(figsize=(10, 6))
-                
+
                 ax.bar(pos_seguidores, seguidores, ancho_barra, label='Seguidores', color='#E1306C')
                 ax.bar(pos_seguidos, seguidos, ancho_barra, label='Seguidos', color='#833AB4')
                 ax.bar(pos_publicaciones, publicaciones, ancho_barra, label='Publicaciones', color='#405DE6')
@@ -454,13 +579,13 @@ def main():
                 plt.tight_layout()
                 plt.show()
                 print("✅ Gráfica cerrada exitosamente.")
-                
+
             except ImportError:
                 print("⚠️ NOTA: No se pudo generar el gráfico porque no tienes instalada la librería.")
 
             print("\nSaliendo de la simulación del Grupo 3... ¡Hasta luego!")
             break
-            
+
         else:
             print("\n❌ Opción no válida. Intenta de nuevo (1 al 6).")
 
