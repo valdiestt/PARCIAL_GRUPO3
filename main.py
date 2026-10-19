@@ -217,6 +217,28 @@ def main():
                 print(f"👑 VIP: {'Sí 💎' if es_vip else 'No (Standard)'}")
                 print(f"🎨 Personalización -> Icono: '{perfil.obtener_icono()}' | Tipografía: '{perfil.obtener_tipografia()}'")
 
+                # Métodos existentes de Clase_usuario para editar el perfil.
+                editar = input("\nCambiar @usuario (1), correo (2) o continuar (ENTER): ").strip()
+
+                if editar == '1':
+                    nuevo = input("Nuevo @usuario: ").strip()
+                    if nuevo in red_social and nuevo != buscar:
+                        print("❌ Ese nombre de usuario ya está en uso.")
+                    elif perfil.cambiar_nombre_usuario(nuevo):
+                        # Actualizar la clave del diccionario sin crear otro usuario.
+                        red_social[nuevo] = red_social.pop(buscar)
+                        buscar = nuevo
+                        print("✅ Nombre de usuario actualizado.")
+                    else:
+                        print("❌ El nombre de usuario no puede quedar vacío.")
+
+                elif editar == '2':
+                    nuevo_correo = input("Nuevo correo: ").strip()
+                    if perfil.cambiar_correo(nuevo_correo):
+                        print("✅ Correo actualizado.")
+                    else:
+                        print("❌ El correo no puede quedar vacío.")
+
                 if es_vip:
                     while True:
                         print("\n--- ✨ OPCIONES EXCLUSIVAS VIP ✨ ---")
